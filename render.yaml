@@ -3,7 +3,7 @@ services:
     name: simple-app
     env: python
     buildCommand: ""
-    startCommand: uvicorn main:app --reload
+    startCommand: uvicorn main:app --host 0.0.0.0 --port 5000
     plan: free
     branch: main
     envVars:
