@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: simple-app
+    env: python
+    buildCommand: ""
+    startCommand: uvicorn main:app --reload
+    plan: free
+    branch: main
+    envVars:
+      - key: MONGO_URI
+        value: mongodb://localhost:27017
+      - key: DB_NAME
+        value: loan_app
+      - key : DB_USERNAME
+        value: rajisurvase
+      - key : DB_PASSWORD
+        value : rajisurvase
+      - key  : SECRET_KEY
+        value : c5d57c4e62f42d71ef1b8a920e5fdc2db8e90e42b64d7c8d68146a2d8f6f6792
