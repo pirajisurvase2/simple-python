@@ -55,17 +55,35 @@
 
 
 
-import os
-import uvicorn
 from fastapi import FastAPI
+from motor.motor_asyncio import AsyncIOMotorClient
+import os
 
 app = FastAPI()
 
+client = None
+db = None
+
+@app.on_event("startup")
+async def startup_db_client():
+    global client, db
+    client = AsyncIOMotorClient(
+        f"mongodb+srv://{os.environ['DB_USERNAME']}:{os.environ['DB_PASSWORD']}@cluster0.eqjafpc.mongodb.net/{os.environ['DB_NAME']}?retryWrites=true&w=majority"
+    )
+    db = client[os.environ['DB_NAME']]
+    print("✅ Connected to MongoDB Atlas")
+
+@app.on_event("shutdown")
+async def shutdown_db_client():
+    client.close()
+
 @app.get("/")
-def root():
-    return {"message": "FastAPI running on Render!"}
+async def root():
+    return {"message": "FastAPI running on Render with MongoDB!"}
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Render provides PORT env variable
+    port = int(os.environ.get("PORT", 8000))
+    import uvicorn
     uvicorn.run("main:app", host="0.0.0.0", port=port)
+
  

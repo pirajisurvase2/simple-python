@@ -7,8 +7,6 @@ services:
     plan: free
     branch: main
     envVars:
-      - key: MONGO_URI
-        value: mongodb://localhost:27017
       - key: DB_NAME
         value: loan_app
       - key : DB_USERNAME
