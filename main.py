@@ -50,5 +50,5 @@ app.include_router(borrower.router, prefix="/api/borrower")
 app.include_router(transaction.router, prefix="/api/transaction")
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Render sets $PORT dynamically
+    port = int(os.environ.get("PORT", 8001))  # Render sets $PORT dynamically
     uvicorn.run("main:app", host="0.0.0.0", port=port)
