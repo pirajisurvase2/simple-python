@@ -7,9 +7,23 @@ from utils.comman import  validation_exception_handler
 from fastapi.exceptions import RequestValidationError
 import uvicorn
 import os
+from fastapi.middleware.cors import CORSMiddleware
+
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:3000",  # your Next.js dev server
+    "https://simple-lender.vercel.app/"  # your production domain
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # or ["*"] for testing
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def custom_openapi():
     if app.openapi_schema:
