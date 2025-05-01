@@ -7,7 +7,7 @@ from datetime import datetime
 
 async def add_or_edit_borrower_service(
     borrower: BorrowerModel,
-    borrower_id: str = None,
+    _id: str = None,
     lender_id: str = None  # Comes from token (current_user["_id"])
 ):
     try:
@@ -15,10 +15,10 @@ async def add_or_edit_borrower_service(
         borrower_data["dob"] = convert_dates(borrower.dob)
         borrower_data["lender_id"] = lender_id  # Add lender_id to stored data
 
-        if borrower_id:
+        if _id:
             # Ensure borrower exists and belongs to the lender
             existing_borrower = await borrower_collection.find_one(
-                {"_id": ObjectId(borrower_id), "lender_id": lender_id}
+                {"_id": ObjectId(_id), "lender_id": lender_id}
             )
             if not existing_borrower:
                 return custom_response(
@@ -28,7 +28,7 @@ async def add_or_edit_borrower_service(
 
             # Update borrower
             result = await borrower_collection.update_one(
-                {"_id": ObjectId(borrower_id)},
+                {"_id": ObjectId(_id)},
                 {"$set": borrower_data}
             )
             if result.modified_count == 0:
