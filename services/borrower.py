@@ -71,7 +71,6 @@ async def get_borrowers_service(
         if email:
             query["email"] = {"$regex": email, "$options": "i"}
 
-        # cursor = await borrower_collection.find(query).to_list(100)  # Fetch all results as a list
         skip_value = (page - 1) * limit
         
         # Fetch paginated results
@@ -81,19 +80,11 @@ async def get_borrowers_service(
         total_count = await borrower_collection.count_documents(query)
         borrowers = []
         for borrower in cursor:
-            borrower["_id"] = str(borrower["_id"])  # Convert ObjectId to string
-            if "dob" in borrower and isinstance(borrower["dob"], datetime):
-                borrower["dob"] = borrower["dob"].isoformat()
-            borrower_info = {
-                "_id" : borrower["_id"],
-                "full_name": f"{borrower['first_name']} {borrower['last_name']}",
-                "email": borrower["email"],
-                "phone": borrower["phone"],
-                "dob": borrower["dob"],
-                "address": borrower["address"]
-            }
-            borrowers.append(borrower_info)
-        pagination_response = custom_pagination_response(page, limit, total_count, borrowers)
+            borrower["_id"] = str(borrower["_id"]) 
+            if "lender_id" in borrower:
+                del borrower["lender_id"] 
+            borrowers.append(borrower)
+        pagination_response = custom_pagination_response(page, limit, total_count, cursor)
         return custom_response(
             status.HTTP_200_OK,
             "Borrowers retrieved successfully",
