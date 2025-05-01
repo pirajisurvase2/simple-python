@@ -6,7 +6,7 @@ class BorrowerModel(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
-    dob: date
+    dob: str
     address: str
     country: str
     state: str

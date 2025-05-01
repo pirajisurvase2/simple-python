@@ -15,6 +15,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000",  # your Next.js dev server
     "https://simple-lender.vercel.app/"  # your production domain
+    "http://localhost:3002"
 ]
 
 app.add_middleware(
