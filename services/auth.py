@@ -1,4 +1,4 @@
-from fastapi import Header,status
+from fastapi import Header,status, HTTPException
 from jose import JWTError, jwt
 from typing import Optional
 from config import SECRET_KEY, ALGORITHM
@@ -34,23 +34,36 @@ async def signin_service(credentials: SignInModel):
 
 async def get_current_user(authorization: Optional[str] = Header(None)) -> dict:
     if authorization is None or not authorization.startswith("Bearer "):
-        raise ValueError("Invalid or missing Authorization header")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid or missing Authorization header"
+        )
 
     token = authorization.split(" ")[1]
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         email: str = payload.get("email")
         if email is None:
-            raise ValueError("Token payload invalid")
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Token payload invalid"
+            )
     except JWTError:
-        raise ValueError("Could not validate token")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Could not validate token"
+        )
 
     user = await users_collection.find_one({"email": email}, {"password": 0})
     if not user:
-        raise ValueError("User not found")
-    
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
     user["_id"] = str(user["_id"])
     return user
+
 
 async def update_user_profile(
     email: str, 

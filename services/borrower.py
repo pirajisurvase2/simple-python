@@ -3,7 +3,6 @@ from fastapi import status
 from model.borrower import BorrowerModel
 from database import borrower_collection
 from utils.comman import custom_response, convert_dates,custom_pagination_response
-from datetime import datetime
 
 async def add_or_edit_borrower_service(
     borrower: BorrowerModel,
@@ -55,22 +54,20 @@ async def add_or_edit_borrower_service(
         )
 
 async def get_borrowers_service(
-    first_name: str,
-    last_name: str,
-    email: str,
+    search : str,
     lender_id: str,
     page: int = 1,
     limit: int = 8  # Default limit for pagination
 ):
     try:
         query = {"lender_id": lender_id}
-        if first_name:
-            query["first_name"] = {"$regex": first_name, "$options": "i"}
-        if last_name:
-            query["last_name"] = {"$regex": last_name, "$options": "i"}
-        if email:
-            query["email"] = {"$regex": email, "$options": "i"}
-
+        if search:
+            query["$or"] = [
+                {"first_name": {"$regex": search, "$options": "i"}},
+                {"last_name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}}
+            ]
+            
         skip_value = (page - 1) * limit
         
         # Fetch paginated results

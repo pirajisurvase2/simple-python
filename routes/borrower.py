@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 from model.borrower import BorrowerModel
+from typing import Optional
 from services.borrower import (
     add_or_edit_borrower_service,
     delete_borrower_service,
@@ -37,18 +38,14 @@ async def add_borrower(
 
 @router.get("/")
 async def list_borrowers(
-    first_name: str = "",
-    last_name: str = "",
-    email: str = "",
+    search : Optional[str]=None,
     page: int = 1,  # Pagination: page number
     limit: int = 8,  # Pagination: number of items per page
     current_user: dict = Depends(get_current_user),  # Extracts lender_id from token
 ):
     try:
         response = await get_borrowers_service(
-            first_name,
-            last_name,
-            email,
+            search,
             current_user["_id"],  # Pass lender_id from token
             page,  # Pass page number
             limit  # Pass limit for number of borrowers per page
