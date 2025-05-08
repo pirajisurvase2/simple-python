@@ -3,6 +3,7 @@ from fastapi import status
 from model.borrower import BorrowerModel
 from database import borrower_collection
 from utils.comman import custom_response, convert_dates,custom_pagination_response
+from pymongo import DESCENDING
 
 async def add_or_edit_borrower_service(
     borrower: BorrowerModel,
@@ -71,7 +72,7 @@ async def get_borrowers_service(
         skip_value = (page - 1) * limit
         
         # Fetch paginated results
-        cursor = await borrower_collection.find(query).skip(skip_value).limit(limit).to_list(limit)
+        cursor = await borrower_collection.find(query).sort("_id", DESCENDING).skip(skip_value).limit(limit).to_list(limit)
 
         # Get total count for pagination calculation
         total_count = await borrower_collection.count_documents(query)
