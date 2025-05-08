@@ -94,6 +94,8 @@ async def list_transactions_service(page: int, limit: int, borrower_name: str, e
 
     for txn in txns:
         txn["borrower_name"] = borrower_map.get(txn["borrower_id"], "N/A")
+        if "lender_id" in txn:
+            del txn["lender_id"]
     
     txns = serialize_mongo_documents(txns)
 
