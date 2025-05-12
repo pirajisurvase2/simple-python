@@ -70,15 +70,17 @@ async def delete_transaction_service(txn_id: str, current_user: dict):
     await transactions_collection.delete_one({"_id": ObjectId(txn_id)})
     return custom_response(200, "Transaction deleted")
 
-async def list_transactions_service(page: int, limit: int, borrower_name: str, email: str, status: str, sort_by: str, current_user: dict):
+async def list_transactions_service(page: int, limit: int,search : str, status: str, sort_by: str, current_user: dict):
     skip = (page - 1) * limit
     query = {}
 
     borrower_filter = {"lender_id": current_user["_id"]}
-    if borrower_name:
-        borrower_filter["name"] = {"$regex": borrower_name, "$options": "i"}
-    if email:
-        borrower_filter["email"] = {"$regex": email, "$options": "i"}
+    if search:
+            borrower_filter["$or"] = [
+                {"name": {"$regex": search, "$options": "i"}},
+                {"last_name": {"$regex": search, "$options": "i"}},
+                {"email": {"$regex": search, "$options": "i"}}
+            ]
 
     borrowers = await borrower_collection.find(borrower_filter).to_list(None)
     borrower_ids = [str(b["_id"]) for b in borrowers]

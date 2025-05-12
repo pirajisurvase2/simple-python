@@ -26,10 +26,9 @@ async def delete_transaction(txn_id: str, current_user: dict = Depends(get_curre
 async def list_transactions(
     page: int = Query(1, ge=1),
     limit: int = Query(10, ge=1),
-    borrower_name: str = "",
-    email: str = "",
+    search: str = "",
     status: str = "",
     sort_by: str = "transaction_date",
     current_user: dict = Depends(get_current_user)
 ):
-    return await list_transactions_service(page, limit, borrower_name, email, status, sort_by, current_user)
+    return await list_transactions_service(page, limit, search, status, sort_by, current_user)
