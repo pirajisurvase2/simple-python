@@ -126,3 +126,42 @@ async def delete_borrower_service(
             status.HTTP_500_INTERNAL_SERVER_ERROR,
             f"Service error: {str(e)}"
         )
+    
+async def get_borrower_details_service(
+    borrower_id: str,
+    lender_id: str  # Comes from the current_user["_id"]
+):
+    try:
+        # Validate ObjectId
+        if not ObjectId.is_valid(borrower_id):
+            return custom_response(
+                status.HTTP_400_BAD_REQUEST,
+                "Invalid borrower ID format"
+            )
+
+        # Find borrower who belongs to the current lender
+        borrower = await borrower_collection.find_one(
+            {"_id": ObjectId(borrower_id), "lender_id": lender_id},
+            {"_id": 1, "name": 1, "email": 1, "phone": 1, "address": 1, "created_at": 1}  # Return only necessary fields
+        )
+
+        if not borrower:
+            return custom_response(
+                status.HTTP_404_NOT_FOUND,
+                "Borrower not found or access denied"
+            )
+
+        # Convert ObjectId to string for response
+        borrower["_id"] = str(borrower["_id"])
+
+        return custom_response(
+            status.HTTP_200_OK,
+            "Borrower details retrieved successfully",
+           {"data" : borrower}
+        )
+
+    except Exception as e:
+        return custom_response(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            f"Service error: {str(e)}"
+        )

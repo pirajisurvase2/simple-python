@@ -5,6 +5,7 @@ from services.borrower import (
     add_or_edit_borrower_service,
     delete_borrower_service,
     get_borrowers_service,
+    get_borrower_details_service
 )
 from services.auth import get_current_user
 from utils.comman import custom_response
@@ -34,6 +35,17 @@ async def add_borrower(
         return custom_response(
             status.HTTP_500_INTERNAL_SERVER_ERROR,
             f"Error while adding borrower: {str(e)}"
+        )
+
+@router.get("/{borrower_id}")
+async def get_borrower(borrower_id: str,current_user: dict = Depends(get_current_user)):
+    try:
+        lender_id = current_user["_id"]
+        return await get_borrower_details_service(borrower_id, lender_id)
+    except Exception as e:
+        return custom_response(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            f"Error while deleting borrower: {str(e)}"
         )
 
 @router.get("/")
