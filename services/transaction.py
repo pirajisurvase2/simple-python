@@ -70,11 +70,19 @@ async def delete_transaction_service(txn_id: str, current_user: dict):
     await transactions_collection.delete_one({"_id": ObjectId(txn_id)})
     return custom_response(200, "Transaction deleted")
 
-async def list_transactions_service(page: int, limit: int,search : str, status: str, sort_by: str, current_user: dict):
+async def list_transactions_service(page: int, limit: int,search : str,borrower_id :str, status: str, sort_by: str, current_user: dict):
     skip = (page - 1) * limit
     query = {}
 
     borrower_filter = {"lender_id": current_user["_id"]}
+    if borrower_id:
+        try:
+            borrower_filter["_id"] = ObjectId(borrower_id)
+        except Exception as e:
+            return custom_response(
+                404,
+                f"Error while adding borrower: {str(e)}"
+            )
     if search:
             borrower_filter["$or"] = [
                 {"name": {"$regex": search, "$options": "i"}},
