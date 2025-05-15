@@ -12,6 +12,7 @@ class BorrowerModel(BaseModel):
     state: str
     pincode: str
     phone: str
+    city : str
 
 class FilterBorrowerModel(BaseModel):
     first_name: Optional[str]
